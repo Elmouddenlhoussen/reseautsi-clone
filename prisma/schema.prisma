@@ -18,7 +18,7 @@ model User {
   
   isVerified           Boolean   @default(false)
   verificationCode     String?
-  verificationCodeExpiry DateTime?
+  codeExpiry           DateTime?
   
   firstName       String?
   lastName        String?
