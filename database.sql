@@ -1,5 +1,4 @@
 -- TSI Registration Database Setup
--- Run this in phpMyAdmin or MySQL command line
 
 -- Create database
 CREATE DATABASE IF NOT EXISTS tsi CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
