@@ -12,30 +12,24 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-// Generate random 6-digit code
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Register endpoint
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password, userType, ...userData } = req.body;
 
-    // Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'Cet email est déjà utilisé' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification code
     const verificationCode = generateCode();
-    const codeExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    const codeExpiry = new Date(Date.now() + 15 * 60 * 1000);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         email,
@@ -48,7 +42,6 @@ app.post('/api/auth/register', async (req, res) => {
       },
     });
 
-    // TODO: Send email with verification code
     console.log(`Verification code for ${email}: ${verificationCode}`);
 
     res.json({ success: true, message: 'Inscription réussie' });
@@ -58,7 +51,6 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -81,7 +73,6 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
 
-    // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
     res.json({ user: userWithoutPassword });
@@ -91,7 +82,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Verify email endpoint
 app.post('/api/auth/verify', async (req, res) => {
   try {
     const { email, code } = req.body;
@@ -129,7 +119,6 @@ app.post('/api/auth/verify', async (req, res) => {
   }
 });
 
-// Resend code endpoint
 app.post('/api/auth/resend-code', async (req, res) => {
   try {
     const { email } = req.body;
@@ -151,7 +140,6 @@ app.post('/api/auth/resend-code', async (req, res) => {
       data: { verificationCode, codeExpiry },
     });
 
-    // TODO: Send email with verification code
     console.log(`New verification code for ${email}: ${verificationCode}`);
 
     res.json({ success: true, message: 'Code renvoyé' });
@@ -161,7 +149,6 @@ app.post('/api/auth/resend-code', async (req, res) => {
   }
 });
 
-// Update user endpoint
 app.put('/api/user/update', async (req, res) => {
   try {
     const { email, ...updateData } = req.body;
